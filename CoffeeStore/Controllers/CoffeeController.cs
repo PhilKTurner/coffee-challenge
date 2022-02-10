@@ -7,27 +7,31 @@ namespace CoffeeChallenge.CoffeeStore.Controllers;
 public class CoffeeController : ControllerBase
 {
     private readonly ILogger<CoffeeController> _logger;
+    private readonly ICoffeeStorage storage;
+    private readonly IStoreClerk clerk;
 
-    public CoffeeController(ILogger<CoffeeController> logger)
+    public CoffeeController(ILogger<CoffeeController> logger, ICoffeeStorage storage, IStoreClerk clerk)
     {
         _logger = logger;
+        this.storage = storage;
+        this.clerk = clerk;
     }
 
-    [HttpPut("[action]")]
+    [HttpPut("[action]/{deliverySize}")]
     public void Deliver(int deliverySize)
     {
-        throw new NotImplementedException();
+        storage.StoreCoffee(deliverySize);
     }
 
     [HttpGet("[action]")]
     public int Available()
     {
-        throw new NotImplementedException();
+        return storage.GetCoffeeCount();
     }
 
     [HttpPut("[action]")]
     public void Buy(int requestedAmount = 1)
     {
-        throw new NotImplementedException();
+        clerk.BuyCoffee(requestedAmount);
     }
 }

@@ -1,4 +1,5 @@
 using System.Data.Common;
+using CoffeeChallenge.CoffeeStore;
 using CoffeeChallenge.CoffeeStore.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,6 +32,9 @@ builder.Services.AddDbContext<CoffeeStoreContext>(
             options => options.EnableRetryOnFailure()
         )
 );
+
+builder.Services.AddScoped<ICoffeeStorage, CoffeeStorage>();
+builder.Services.AddScoped<IStoreClerk, StoreClerk>();
 
 var app = builder.Build();
 
