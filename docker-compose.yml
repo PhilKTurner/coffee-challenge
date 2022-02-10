@@ -2,9 +2,54 @@
 
 version: '3.4'
 
+networks:
+  dbaccess:
+    name: cc-dbaccess
+    driver: bridge
+
+volumes:
+  data:
+    name: cc-dbdata
+    driver: local
+
+secrets:
+  cc-mariadb-rootpw:
+    file: ./.secrets/cc-mariadb-rootpw
+  cc-mariadb-pw:
+    file: ./.secrets/cc-mariadb-pw
+
 services:
-  coffeefactory:
-    image: coffeefactory
+  coffee-store:
+    profiles:
+      - coffee-services
     build:
-      context: .
-      dockerfile: CoffeeFactory/Dockerfile
+      context: ./CoffeeStore
+    image: cc-coffee-store
+    container_name: cc-coffee-store
+    depends_on:
+      - db
+    networks:
+      - dbaccess
+    ports:
+      - 5000:5000
+    secrets:
+      - cc-mariadb-pw
+
+  db:
+    profiles:
+      - backend
+    image: mariadb:10.6.5
+    container_name: cc-db
+    networks:
+      - dbaccess
+    restart: unless-stopped
+    secrets:
+      - cc-mariadb-rootpw
+      - cc-mariadb-pw
+    environment:
+      - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/cc-mariadb-rootpw
+      - MARIADB_DATABASE=coffee-store-db
+      - MARIADB_USER=clerk
+      - MARIADB_PASSWORD_FILE=/run/secrets/cc-mariadb-pw
+    volumes:
+      - data:/var/lib/mysql
