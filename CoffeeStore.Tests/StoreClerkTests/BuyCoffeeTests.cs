@@ -4,7 +4,6 @@ using NUnit.Framework;
 
 namespace CoffeeChallenge.CoffeeStore.Tests.CoffeeStoreClerkTests;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CS8618", Justification = "Not production code.")]
 public class BuyCoffeeTests
 {
     private StoreClerk subject;
