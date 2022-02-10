@@ -9,4 +9,9 @@ public class CoffeeStoreContext : DbContext
     }
 
     public DbSet<Coffee> Coffee { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Coffee>().HasData(new Coffee { Id = 1, Inventory = 0 });
+    }
 }
