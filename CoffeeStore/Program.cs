@@ -39,19 +39,16 @@ builder.Services.AddScoped<IStoreClerk, StoreClerk>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
+// In the context of this challenge Swagger can also be part of production setup.
+app.UseSwagger();
+app.UseSwaggerUI();
 
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<CoffeeStoreContext>();
     db.Database.Migrate();
 }
-
-app.UseAuthorization();
 
 app.MapControllers();
 
