@@ -105,7 +105,15 @@
             "dependsOn": [
                 "docker-build: debug coffee-store"
             ],
-            "dockerRun": {},
+            "dockerRun": {
+                "network": "cc-dbaccess",
+                "ports": [
+                    {
+                        "containerPort": 5000,
+                        "hostPort": 5000
+                    }
+                ]
+            },
             "netCore": {
                 "appProject": "${workspaceFolder}/CoffeeStore/CoffeeStore.csproj",
                 "enableDebugging": true
