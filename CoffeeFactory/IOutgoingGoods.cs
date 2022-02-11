@@ -2,7 +2,7 @@ namespace CoffeeChallenge.CoffeeFactory;
 
 public interface IOutgoingGoods
 {
-    Task DepositCoffeeAsync();
-    
+    Task DepositCoffeeAsync(int count);
+
     Task<int> CollectOutgoingGoodsAsync();
 }
