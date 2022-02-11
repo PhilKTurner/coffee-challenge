@@ -39,7 +39,24 @@
         },
         {
             "type": "docker-build",
-            "label": "docker-build: debug",
+            "label": "docker-build: debug coffee-factory",
+            "dependsOn": [
+                "build"
+            ],
+            "dockerBuild": {
+                "tag": "coffeechallenge:dev",
+                "target": "base",
+                "dockerfile": "${workspaceFolder}/CoffeeFactory/Dockerfile",
+                "context": "${workspaceFolder}",
+                "pull": true
+            },
+            "netCore": {
+                "appProject": "${workspaceFolder}/CoffeeFactory/CoffeeFactory.csproj"
+            }
+        },
+        {
+            "type": "docker-build",
+            "label": "docker-build: debug coffee-store",
             "dependsOn": [
                 "build"
             ],
@@ -72,9 +89,21 @@
         },
         {
             "type": "docker-run",
-            "label": "docker-run: debug",
+            "label": "docker-run: debug coffee-factory",
             "dependsOn": [
-                "docker-build: debug"
+                "docker-build: debug coffee-factory"
+            ],
+            "dockerRun": {},
+            "netCore": {
+                "appProject": "${workspaceFolder}/CoffeeFactory/CoffeeFactory.csproj",
+                "enableDebugging": true
+            }
+        },
+        {
+            "type": "docker-run",
+            "label": "docker-run: debug coffee-store",
+            "dependsOn": [
+                "docker-build: debug coffee-store"
             ],
             "dockerRun": {},
             "netCore": {

@@ -18,10 +18,19 @@
             "request": "attach"
         },
         {
-            "name": "Docker .NET Core Launch",
+            "name": "Docker .NET Core Launch CoffeeFactory",
             "type": "docker",
             "request": "launch",
-            "preLaunchTask": "docker-run: debug",
+            "preLaunchTask": "docker-run: debug coffee-factory",
+            "netCore": {
+                "appProject": "${workspaceFolder}/CoffeeFactory/CoffeeFactory.csproj"
+            }
+        },
+        {
+            "name": "Docker .NET Core Launch CoffeeStore",
+            "type": "docker",
+            "request": "launch",
+            "preLaunchTask": "docker-run: debug coffee-store",
             "netCore": {
                 "appProject": "${workspaceFolder}/CoffeeStore/CoffeeStore.csproj"
             }
