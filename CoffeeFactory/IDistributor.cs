@@ -2,5 +2,5 @@ namespace CoffeeChallenge.CoffeeFactory;
 
 public interface IDistributor
 {
-    void DeliverCoffee();
+    Task DeliverCoffeeAsync();
 }
