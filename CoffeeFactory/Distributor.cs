@@ -5,12 +5,12 @@ public class Distributor : IDistributor
     private const string requestUriFormatString = "/coffee/deliver/{0}";
 
     private readonly IOutgoingGoods outgoingGoods;
-    private readonly HttpClient httpClient;
+    private readonly IHttpClientFactory httpClientFactory;
 
-    public Distributor(IOutgoingGoods outgoingGoods, HttpClient httpClient)
+    public Distributor(IOutgoingGoods outgoingGoods, IHttpClientFactory httpClientFactory)
     {
         this.outgoingGoods = outgoingGoods;
-        this.httpClient = httpClient;
+        this.httpClientFactory = httpClientFactory;
     }
 
     public async Task DeliverCoffeeAsync()
@@ -28,6 +28,7 @@ public class Distributor : IDistributor
         var deliverySuccess = false;
         try
         {
+            var httpClient = httpClientFactory.CreateClient("CoffeeStoreClient");
             var response = await httpClient.PutAsync(requestUri, null);
             deliverySuccess = response.IsSuccessStatusCode;
         }

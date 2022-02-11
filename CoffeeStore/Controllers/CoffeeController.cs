@@ -17,6 +17,7 @@ public class CoffeeController : ControllerBase
         this.clerk = clerk;
     }
 
+    // TODO Prevent others than CoffeeFactory from making deliveries?
     [HttpPut("[action]/{deliverySize}")]
     public void Deliver(int deliverySize)
     {

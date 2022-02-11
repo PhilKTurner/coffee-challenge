@@ -6,6 +6,9 @@ networks:
   dbaccess:
     name: cc-dbaccess
     driver: bridge
+  coffee-distribution:
+    name: cc-distribution
+    driver: bridge
 
 volumes:
   data:
@@ -19,6 +22,16 @@ secrets:
     file: ./.secrets/cc-mariadb-pw
 
 services:
+  coffee-factory:
+    profiles:
+      - coffee-services
+    build:
+      context: ./CoffeeFactory
+    image: cc-coffee-factory
+    container_name: cc-coffee-factory
+    networks:
+      - coffee-distribution
+
   coffee-store:
     profiles:
       - coffee-services
@@ -30,6 +43,7 @@ services:
       - db
     networks:
       - dbaccess
+      - coffee-distribution
     ports:
       - 5000:5000
     secrets:

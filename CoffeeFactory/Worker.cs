@@ -1,12 +1,18 @@
+using CoffeeChallenge.CoffeeFactory;
+
 namespace CoffeeFactory;
 
 public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
+    private readonly ICoffeeMachine coffeeMachine;
+    private readonly IDistributor distributor;
 
-    public Worker(ILogger<Worker> logger)
+    public Worker(ILogger<Worker> logger, ICoffeeMachine coffeeMachine, IDistributor distributor)
     {
         _logger = logger;
+        this.coffeeMachine = coffeeMachine;
+        this.distributor = distributor;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -14,7 +20,11 @@ public class Worker : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-            await Task.Delay(1000, stoppingToken);
+
+            await coffeeMachine.CreateCoffeeAsync();
+            await distributor.DeliverCoffeeAsync();
+
+            await Task.Delay(5000, stoppingToken);
         }
     }
 }

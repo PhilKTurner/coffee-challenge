@@ -24,7 +24,10 @@ public class DeliverCoffeeAsyncTests
         httpClient = new HttpClient(messageHandler);
         httpClient.BaseAddress = new Uri("http://this.is.a.test/");
 
-        subject = new Distributor(outgoingGoods, httpClient);
+        var httpClientFactory = A.Fake<IHttpClientFactory>();
+        A.CallTo(() => httpClientFactory.CreateClient(A<string>.Ignored)).Returns(httpClient);
+
+        subject = new Distributor(outgoingGoods, httpClientFactory);
     }
 
     private void CheckSendCall(string expectedRelativeUri)
