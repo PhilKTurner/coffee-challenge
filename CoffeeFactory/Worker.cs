@@ -19,12 +19,19 @@ public class Worker : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+            try
+            {
+                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
-            await coffeeMachine.CreateCoffeeAsync();
-            await distributor.DeliverCoffeeAsync();
+                await coffeeMachine.CreateCoffeeAsync();
+                await distributor.DeliverCoffeeAsync();
 
-            await Task.Delay(5000, stoppingToken);
+                await Task.Delay(5000, stoppingToken);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Exception occured during working cycle.");
+            }
         }
     }
 }
