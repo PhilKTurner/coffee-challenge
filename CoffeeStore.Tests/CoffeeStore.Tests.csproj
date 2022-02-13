@@ -5,8 +5,10 @@
     <Nullable>enable</Nullable>
 
     <IsPackable>false</IsPackable>
+  </PropertyGroup>
 
-    <DisabledWarnings>8618</DisabledWarnings>
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);8618</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
