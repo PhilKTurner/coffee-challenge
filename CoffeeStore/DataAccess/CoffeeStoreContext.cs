@@ -8,7 +8,7 @@ public class CoffeeStoreContext : DbContext
     {
     }
 
-    public DbSet<Coffee> Coffee { get; set; }
+    public DbSet<Coffee> Coffee { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
