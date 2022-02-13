@@ -30,6 +30,12 @@ public class DeliverCoffeeAsyncTests
         subject = new Distributor(outgoingGoods, httpClientFactory);
     }
 
+    [TearDown]
+    public void TearDown()
+    {
+        httpClient.Dispose();
+    }
+
     private void CheckSendCall(string expectedRelativeUri)
     {
         var expectedUri = new Uri(httpClient.BaseAddress, expectedRelativeUri);
@@ -67,7 +73,7 @@ public class DeliverCoffeeAsyncTests
     [TestCase(-1)]
     [TestCase(-42)]
     [TestCase(int.MinValue)]
-    public async Task SubjectThrowsIfAmountIsInvalid(int testValue)
+    public void SubjectThrowsIfAmountIsInvalid(int testValue)
     {
         A.CallTo(() => outgoingGoods.CollectOutgoingGoodsAsync()).Returns(testValue);
 
