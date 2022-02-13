@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FakeItEasy;
+using FakeItEasy.Core;
 using NUnit.Framework;
 
 namespace CoffeeChallenge.CoffeeFactory.Tests.DistributorTests;
@@ -38,12 +39,21 @@ public class DeliverCoffeeAsyncTests
 
     private void CheckSendCall(string expectedRelativeUri)
     {
+        if (httpClient.BaseAddress == null)
+            throw new Exception("Test setup didn't provide BaseAddress.");
+
         var expectedUri = new Uri(httpClient.BaseAddress, expectedRelativeUri);
 
-        A.CallTo(messageHandler).Where(x => 
-            x.Method.Name == "SendAsync" 
-            && ((HttpRequestMessage)x.Arguments[0]).Method == HttpMethod.Put
-            && ((HttpRequestMessage)x.Arguments[0]).RequestUri == expectedUri).MustHaveHappenedOnceExactly();
+        A.CallTo(messageHandler).Where(x => IsMessageHandlerCallValid(x, expectedUri)).MustHaveHappenedOnceExactly();
+    }
+
+    private bool IsMessageHandlerCallValid(IFakeObjectCall call, Uri expectedUri)
+    {
+        var requestMessage = call.Arguments[0] as HttpRequestMessage;
+        if (requestMessage == null)
+            throw new Exception("Call argument is no valid HttpRequestMessage.");
+
+        return call.Method.Name == "SendAsync" && requestMessage.Method == HttpMethod.Put && requestMessage.RequestUri == expectedUri;
     }
 
     [Test]
