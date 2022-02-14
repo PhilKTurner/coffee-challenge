@@ -2,7 +2,7 @@ using System;
 using FakeItEasy;
 using NUnit.Framework;
 
-namespace CoffeeChallenge.CoffeeStore.Tests.CoffeeStoreClerkTests;
+namespace CoffeeChallenge.CoffeeStore.Tests;
 
 public class BuyCoffeeTests
 {

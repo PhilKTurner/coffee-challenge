@@ -6,7 +6,7 @@ using FakeItEasy;
 using FakeItEasy.Core;
 using NUnit.Framework;
 
-namespace CoffeeChallenge.CoffeeFactory.Tests.DistributorTests;
+namespace CoffeeChallenge.CoffeeFactory.Tests;
 
 public class DeliverCoffeeAsyncTests
 {

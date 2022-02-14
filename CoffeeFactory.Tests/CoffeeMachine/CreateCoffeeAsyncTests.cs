@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using FakeItEasy;
 using NUnit.Framework;
 
-namespace CoffeeChallenge.CoffeeFactory.Tests.CoffeeMachineTests;
+namespace CoffeeChallenge.CoffeeFactory.Tests;
 
 public class CreateCoffeeAsyncTests
 {

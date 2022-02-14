@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
 
-namespace CoffeeChallenge.CoffeeFactory.Tests.OutgoingGoodsTests;
+namespace CoffeeChallenge.CoffeeFactory.Tests;
 
 public class DepositCoffeeAsyncTests
 {

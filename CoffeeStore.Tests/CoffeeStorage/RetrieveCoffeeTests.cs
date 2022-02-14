@@ -5,7 +5,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
-namespace CoffeeChallenge.CoffeeStore.Tests.CoffeeStoreClerkTests;
+namespace CoffeeChallenge.CoffeeStore.Tests;
 
 public class RetrieveCoffeeTests
 {
