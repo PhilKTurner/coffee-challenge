@@ -1,5 +1,7 @@
 # CoffeeChallenge
 ## Getting Started
+Building and running of the solution requires Docker.
+
 Provide passwords used to setup the MariaDB container as UTF-8 text files in ./.secrets
 
 - hims-mariadb-pw
