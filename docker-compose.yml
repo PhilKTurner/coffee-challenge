@@ -11,8 +11,11 @@ networks:
     driver: bridge
 
 volumes:
-  data:
-    name: cc-dbdata
+  factory-data:
+    name: cc-factory-data
+    driver: local
+  store-data:
+    name: cc-store-data
     driver: local
 
 secrets:
@@ -31,6 +34,8 @@ services:
     container_name: cc-coffee-factory
     networks:
       - coffee-distribution
+    volumes:
+      - factory-data:/mnt/data
 
   coffee-store:
     profiles:
@@ -40,7 +45,7 @@ services:
     image: cc-coffee-store
     container_name: cc-coffee-store
     depends_on:
-      - db
+      - store-db
     networks:
       - dbaccess
       - coffee-distribution
@@ -49,11 +54,11 @@ services:
     secrets:
       - cc-mariadb-pw
 
-  db:
+  store-db:
     profiles:
       - backend
     image: mariadb:10.6.5
-    container_name: cc-db
+    container_name: cc-store-db
     networks:
       - dbaccess
     restart: unless-stopped
@@ -66,4 +71,4 @@ services:
       - MARIADB_USER=clerk
       - MARIADB_PASSWORD_FILE=/run/secrets/cc-mariadb-pw
     volumes:
-      - data:/var/lib/mysql
+      - store-data:/var/lib/mysql

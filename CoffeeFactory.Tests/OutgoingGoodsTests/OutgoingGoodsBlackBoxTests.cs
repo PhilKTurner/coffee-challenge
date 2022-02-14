@@ -11,7 +11,7 @@ public class OutgoingGoodsBlackBoxTests
     [SetUp]
     public void SetUp()
     {
-        subject = new OutgoingGoods();
+        subject = new OutgoingGoods(new OutgoingGoodsFileAccessMock());
     }
 
     [Test]

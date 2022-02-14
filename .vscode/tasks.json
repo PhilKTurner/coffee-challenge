@@ -93,7 +93,15 @@
             "dependsOn": [
                 "docker-build: debug coffee-factory"
             ],
-            "dockerRun": {},
+            "dockerRun": {
+                "volumes" : [
+                    {
+                        "localPath": "${workspaceFolder}/.volumes/factory-data",
+                        "containerPath": "/mnt/data",
+                        "permissions": "rw"
+                    }
+                ],
+            },
             "netCore": {
                 "appProject": "${workspaceFolder}/CoffeeFactory/CoffeeFactory.csproj",
                 "enableDebugging": true

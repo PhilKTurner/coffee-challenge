@@ -23,10 +23,15 @@ public class Worker : BackgroundService
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
+                // TODO Hand down cancellation token?
                 await coffeeMachine.CreateCoffeeAsync();
                 await distributor.DeliverCoffeeAsync();
 
                 await Task.Delay(5000, stoppingToken);
+            }
+            catch (OverflowException)
+            {
+                throw;
             }
             catch (Exception exception)
             {
