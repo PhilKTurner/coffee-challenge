@@ -4,8 +4,8 @@ Building and running of the solution requires Docker.
 
 Provide passwords used to setup the MariaDB container as UTF-8 text files in ./.secrets
 
-- hims-mariadb-pw
-- hims-mariadb-rootpw
+- cc-mariadb-pw
+- cc-mariadb-rootpw
 
 Build images and run containers for application and backend:
 
@@ -18,7 +18,7 @@ SwaggerUI provides an interactive, documented interface for CoffeeStore's REST A
 ## Development Environment
 To set up the dev environment for CoffeeStore set the configured MariaDB user password in the .NET secret storage
 ```
-dotnet user-secrets set "CoffeeStoreDatabase:Password" "<hims-mariadb-pw>"
+dotnet user-secrets set "CoffeeStoreDatabase:Password" "<cc-mariadb-pw>"
 ```
 
 ## Deployment
