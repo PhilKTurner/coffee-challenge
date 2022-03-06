@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeeChallenge.CoffeeStore.Controllers;
 
+// TODO exception handling & response codes
+
 [ApiController]
 [Route("[controller]")]
 public class CoffeeController : ControllerBase

@@ -21,7 +21,7 @@ public class OutgoingGoods : IOutgoingGoods
         coffeeCount += count;
 
         if (coffeeCount < oldCoffeeCount)
-            throw new OverflowException("Coffee overflow!");
+            throw new OverflowException("Coffee overflow!"); // TODO remove explicit overflow handling
 
         await fileAccess.WriteAsync(coffeeCount);
     }

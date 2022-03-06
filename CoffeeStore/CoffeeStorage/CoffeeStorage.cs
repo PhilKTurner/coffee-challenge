@@ -27,7 +27,7 @@ public class CoffeeStorage : ICoffeeStorage
             throw new InvalidOperationException("Not enough coffee available.");
 
         coffee.Inventory -= count;
-        context.SaveChanges();
+        context.SaveChanges(); // TODO check if Save is redundant
     }
 
     public void StoreCoffee(int count)

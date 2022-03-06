@@ -1,4 +1,4 @@
-namespace CoffeeChallenge.CoffeeFactory;
+namespace CoffeeChallenge.CoffeeFactory; // TODO make file structure and namespaces consistent
 
 public class CoffeeMachine : ICoffeeMachine
 {
@@ -11,6 +11,7 @@ public class CoffeeMachine : ICoffeeMachine
 
     public async Task CreateCoffeeAsync()
     {
+        // TODO generate objects
         await outgoingGoods.DepositCoffeeAsync(1);
     }
 }
