@@ -1,4 +1,6 @@
-namespace CoffeeChallenge.CoffeeStore;
+using CoffeeChallenge.CoffeeStore.Storage;
+
+namespace CoffeeChallenge.CoffeeStore.Sales;
 
 public class StoreClerk : IStoreClerk
 {

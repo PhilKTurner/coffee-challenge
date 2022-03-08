@@ -1,4 +1,6 @@
 using System;
+using CoffeeChallenge.CoffeeStore.Sales;
+using CoffeeChallenge.CoffeeStore.Storage;
 using FakeItEasy;
 using NUnit.Framework;
 

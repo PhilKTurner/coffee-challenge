@@ -1,4 +1,4 @@
-namespace CoffeeChallenge.CoffeeFactory;
+namespace CoffeeChallenge.CoffeeFactory.Distribution;
 
 public interface IOutgoingGoodsFileAccess
 {

@@ -1,4 +1,4 @@
-namespace CoffeeChallenge.CoffeeFactory;
+namespace CoffeeChallenge.CoffeeFactory.Distribution;
 
 // TODO rework design of OutgoingGoods
 

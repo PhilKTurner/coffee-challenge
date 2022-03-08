@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using CoffeeChallenge.CoffeeFactory.Distribution;
 using FakeItEasy;
 using FakeItEasy.Core;
 using NUnit.Framework;

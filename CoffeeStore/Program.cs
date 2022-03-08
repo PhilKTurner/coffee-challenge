@@ -1,7 +1,8 @@
 using System.Data.Common;
 using System.Reflection;
-using CoffeeChallenge.CoffeeStore;
 using CoffeeChallenge.CoffeeStore.DataAccess;
+using CoffeeChallenge.CoffeeStore.Sales;
+using CoffeeChallenge.CoffeeStore.Storage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 

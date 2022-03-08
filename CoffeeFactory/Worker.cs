@@ -1,4 +1,5 @@
-using CoffeeChallenge.CoffeeFactory;
+using CoffeeChallenge.CoffeeFactory.Distribution;
+using CoffeeChallenge.CoffeeFactory.Production;
 
 namespace CoffeeFactory;
 

@@ -1,6 +1,6 @@
 using CoffeeChallenge.CoffeeStore.DataAccess;
 
-namespace CoffeeChallenge.CoffeeStore;
+namespace CoffeeChallenge.CoffeeStore.Storage;
 
 public class CoffeeStorage : ICoffeeStorage
 {

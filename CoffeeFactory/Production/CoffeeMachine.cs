@@ -1,4 +1,6 @@
-namespace CoffeeChallenge.CoffeeFactory; // TODO make file structure and namespaces consistent
+using CoffeeChallenge.CoffeeFactory.Distribution;
+
+namespace CoffeeChallenge.CoffeeFactory.Production;
 
 public class CoffeeMachine : ICoffeeMachine
 {

@@ -1,4 +1,4 @@
-namespace CoffeeChallenge.CoffeeStore;
+namespace CoffeeChallenge.CoffeeStore.Sales;
 
 public interface IStoreClerk
 {

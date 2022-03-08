@@ -1,4 +1,6 @@
 using System.Threading.Tasks;
+using CoffeeChallenge.CoffeeFactory.Distribution;
+using CoffeeChallenge.CoffeeFactory.Production;
 using FakeItEasy;
 using NUnit.Framework;
 

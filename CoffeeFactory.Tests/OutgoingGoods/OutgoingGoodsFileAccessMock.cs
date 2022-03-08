@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using CoffeeChallenge.CoffeeFactory.Distribution;
 
 namespace CoffeeChallenge.CoffeeFactory.Tests;
 

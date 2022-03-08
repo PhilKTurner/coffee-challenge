@@ -1,5 +1,6 @@
 using System.IO;
 using System.Threading.Tasks;
+using CoffeeChallenge.CoffeeFactory.Distribution;
 using NUnit.Framework;
 
 namespace CoffeeChallenge.CoffeeFactory.Tests;

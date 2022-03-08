@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using CoffeeChallenge.CoffeeStore.DataAccess;
+using CoffeeChallenge.CoffeeStore.Storage;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
