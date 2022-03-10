@@ -29,7 +29,8 @@ services:
     profiles:
       - coffee-services
     build:
-      context: ./CoffeeFactory
+      context: .
+      dockerfile: CoffeeFactory.dockerfile
     image: cc-coffee-factory
     container_name: cc-coffee-factory
     networks:

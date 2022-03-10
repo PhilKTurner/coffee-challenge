@@ -1,4 +1,4 @@
-using System;
+using System.Linq;
 using System.Threading.Tasks;
 using CoffeeChallenge.CoffeeFactory.Distribution;
 using NUnit.Framework;
@@ -12,45 +12,24 @@ public class OutgoingGoodsTests
     [SetUp]
     public void SetUp()
     {
-        subject = new OutgoingGoods(new OutgoingGoodsFileAccessMock());
+        subject = new OutgoingGoods(new OutgoingGoodsBackUpMock());
     }
 
     [Test]
     [TestCase(1)]
     [TestCase(23)]
     [TestCase(42)]
-    [TestCase(int.MaxValue)]
-    public async Task SubjectProvidesDepositedAmountForCollection(int expectedAmount)
+    public async Task SubjectProvidesDepositedCoffees(int objectCount)
     {
-        await subject.DepositCoffeeAsync(expectedAmount);
+        var testCollection = CoffeeCreator.CreateListOfCoffees(objectCount);
 
-        var actualResult = await subject.CollectOutgoingGoodsAsync();
+        foreach (var coffee in testCollection)
+        {
+            await subject.DepositCoffeeAsync(coffee);
+        }
 
-        Assert.AreEqual(expectedAmount, actualResult);
-    }
+        var returnedCollection = await subject.GetCoffeesAsync();
 
-    [Test]
-    [TestCase(new[] {1,23}, 24)]
-    [TestCase(new[] {1,42}, 43)]
-    [TestCase(new[] {23,42}, 65)]
-    [TestCase(new[] {1,23,42}, 66)]
-    public async Task SubjectProvidesSumOfMultipleDepositsForCollection(int[] deposits, int expectedAmount)
-    {
-        await subject.DepositCoffeeAsync(expectedAmount);
-
-        var actualResult = await subject.CollectOutgoingGoodsAsync();
-
-        Assert.AreEqual(expectedAmount, actualResult);
-    }
-
-    [Test]
-    public async Task SubjectRemovesCollectedCoffee()
-    {
-        await subject.DepositCoffeeAsync(42);
-
-        await subject.CollectOutgoingGoodsAsync();
-        var actualResult = await subject.CollectOutgoingGoodsAsync();
-
-        Assert.AreEqual(0, actualResult);
+        CollectionAssert.AreEquivalent(testCollection, returnedCollection);
     }
 }

@@ -1,36 +1,44 @@
+using CoffeeChallenge.Contracts;
+
 namespace CoffeeChallenge.CoffeeFactory.Distribution;
 
 public class OutgoingGoods : IOutgoingGoods
 {
-    private readonly IOutgoingGoodsFileAccess fileAccess;
+    private readonly IOutgoingGoodsBackUp goodsBackUp;
 
-    public OutgoingGoods(IOutgoingGoodsFileAccess fileAccess)
+    public OutgoingGoods(IOutgoingGoodsBackUp goodsBackUp)
     {
-        this.fileAccess = fileAccess;
+        this.goodsBackUp = goodsBackUp;
     }
 
     // TODO On a 5s interval concurrency issues shouldn't be a problem here, ... right?
 
-    public async Task DepositCoffeeAsync(int count)
+    public async Task DepositCoffeeAsync(Coffee coffee)
     {
-        if (count <= 0)
-            throw new ArgumentOutOfRangeException(nameof(count));
+        if (coffee is null)
+            throw new ArgumentNullException(nameof(coffee));
 
-        var coffeeCount = await fileAccess.ReadAsync();
-        var oldCoffeeCount = coffeeCount;
-        coffeeCount += count;
+        var currentCoffees = await goodsBackUp.ReadAsync();
+        currentCoffees = currentCoffees.Append(coffee);
 
-        if (coffeeCount < oldCoffeeCount)
-            throw new OverflowException("Coffee overflow!"); // TODO remove explicit overflow handling
-
-        await fileAccess.WriteAsync(coffeeCount);
+        await goodsBackUp.WriteAsync(currentCoffees);
     }
 
-    public async Task<int> CollectOutgoingGoodsAsync()
+    public async Task RemoveCoffeesAsync(IEnumerable<Coffee> coffeesToRemove)
     {
-        var coffeeCount = await fileAccess.ReadAsync();
-        await fileAccess.WriteAsync(0);
+        if (coffeesToRemove is null)
+            throw new ArgumentNullException(nameof(coffeesToRemove));
 
-        return coffeeCount;
+        var currentCoffees = await goodsBackUp.ReadAsync();
+        currentCoffees = currentCoffees.ExceptBy<Coffee, Guid>(coffeesToRemove.Select(c => c.Id), c => c.Id);
+
+        await goodsBackUp.WriteAsync(currentCoffees);
+    }
+
+    public async Task<IEnumerable<Coffee>> GetCoffeesAsync()
+    {
+        var currentCoffees = await goodsBackUp.ReadAsync();
+
+        return currentCoffees;
     }
 }

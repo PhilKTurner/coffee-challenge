@@ -1,4 +1,5 @@
 using CoffeeChallenge.CoffeeFactory.Distribution;
+using CoffeeChallenge.Contracts;
 
 namespace CoffeeChallenge.CoffeeFactory.Production;
 
@@ -13,7 +14,11 @@ public class CoffeeMachine : ICoffeeMachine
 
     public async Task CreateCoffeeAsync()
     {
-        // TODO generate objects
-        await outgoingGoods.DepositCoffeeAsync(1);
+        var newCoffee = new Coffee()
+        {
+            Id = Guid.NewGuid()
+        };
+
+        await outgoingGoods.DepositCoffeeAsync(newCoffee);
     }
 }

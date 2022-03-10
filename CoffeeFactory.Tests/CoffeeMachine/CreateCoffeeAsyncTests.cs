@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using CoffeeChallenge.CoffeeFactory.Distribution;
 using CoffeeChallenge.CoffeeFactory.Production;
+using CoffeeChallenge.Contracts;
 using FakeItEasy;
 using NUnit.Framework;
 
@@ -24,6 +25,14 @@ public class CreateCoffeeAsyncTests
     {
         await subject.CreateCoffeeAsync();
 
-        A.CallTo(() => outgoingGoods.DepositCoffeeAsync(1)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => outgoingGoods.DepositCoffeeAsync(A<Coffee>.Ignored)).MustHaveHappenedOnceExactly();
+    }
+
+    [Test]
+    public async Task SubjectDepositsCoffeeWithId()
+    {
+        await subject.CreateCoffeeAsync();
+
+        A.CallTo(() => outgoingGoods.DepositCoffeeAsync(A<Coffee>.That.Matches(c => c.Id !=  System.Guid.Empty))).MustHaveHappenedOnceExactly();
     }
 }

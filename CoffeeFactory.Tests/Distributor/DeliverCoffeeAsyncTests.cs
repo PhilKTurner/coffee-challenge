@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using CoffeeChallenge.CoffeeFactory.Distribution;
+using CoffeeChallenge.Contracts;
 using FakeItEasy;
 using FakeItEasy.Core;
 using NUnit.Framework;
@@ -61,9 +64,11 @@ public class DeliverCoffeeAsyncTests
     [TestCase(1, "/coffee/deliver/1")]
     [TestCase(23, "/coffee/deliver/23")]
     [TestCase(42, "/coffee/deliver/42")]
-    public async Task SubjectCallsPutWithCorrectAmount(int testValue, string expectedRelativeUri)
+    public async Task SubjectCallsPutWithCorrectAmount(int objectCount, string expectedRelativeUri)
     {
-        A.CallTo(() => outgoingGoods.CollectOutgoingGoodsAsync()).Returns(testValue);
+        var testCollection = CoffeeCreator.CreateListOfCoffees(objectCount);
+
+        A.CallTo(() => outgoingGoods.GetCoffeesAsync()).Returns(testCollection);
 
         await subject.DeliverCoffeeAsync();
 
@@ -71,9 +76,9 @@ public class DeliverCoffeeAsyncTests
     }
 
     [Test]
-    public async Task SubjectMakesNoHttpCallIfNoCoffeAvailable()
+    public async Task SubjectMakesNoHttpCallIfNoCoffeeAvailable()
     {
-        A.CallTo(() => outgoingGoods.CollectOutgoingGoodsAsync()).Returns(0);
+        A.CallTo(() => outgoingGoods.GetCoffeesAsync()).Returns(new List<Coffee>());
 
         await subject.DeliverCoffeeAsync();
 
@@ -81,28 +86,32 @@ public class DeliverCoffeeAsyncTests
     }
 
     [Test]
-    [TestCase(-1)]
-    [TestCase(-42)]
-    [TestCase(int.MinValue)]
-    public void SubjectThrowsIfAmountIsInvalid(int testValue)
+    public async Task SubjectRemovesCorrectCoffeesIfHttpCallSuccessful()
     {
-        A.CallTo(() => outgoingGoods.CollectOutgoingGoodsAsync()).Returns(testValue);
+        var testCollection = CoffeeCreator.CreateListOfCoffees(42);
 
-        Assert.ThrowsAsync<InvalidOperationException>(async () => await subject.DeliverCoffeeAsync());
-    }
+        A.CallTo(() => outgoingGoods.GetCoffeesAsync()).Returns(testCollection);
 
-    [Test]
-    [TestCase(1)]
-    [TestCase(23)]
-    [TestCase(42)]
-    public async Task SubjectRestoresCorrectAmountIfHttpCallFailsDueToConnectivity(int expectedAmount)
-    {
-        A.CallTo(() => outgoingGoods.CollectOutgoingGoodsAsync()).Returns(expectedAmount);
-        A.CallTo(messageHandler).Where(x => x.Method.Name == "SendAsync").Invokes(() => throw new HttpRequestException());
+        messageHandler.StatusCodeToReturn = HttpStatusCode.OK;
+        A.CallTo(messageHandler).Where(x => x.Method.Name == "SendAsync").CallsBaseMethod();
 
         await subject.DeliverCoffeeAsync();
 
-        A.CallTo(() => outgoingGoods.DepositCoffeeAsync(expectedAmount)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => outgoingGoods.RemoveCoffeesAsync(A<IEnumerable<Coffee>>.Ignored)).MustHaveHappenedOnceExactly();
+    }
+
+    [Test]
+    public async Task SubjectRemovesNoCoffeeInOutgoingGoodsIfHttpCallFailsDueToConnectivity()
+    {
+        var testCollection = CoffeeCreator.CreateListOfCoffees(42);
+
+        A.CallTo(messageHandler).Where(x => x.Method.Name == "SendAsync").Invokes(() => throw new HttpRequestException());
+
+        A.CallTo(() => outgoingGoods.GetCoffeesAsync()).Returns(testCollection);
+
+        await subject.DeliverCoffeeAsync();
+
+        A.CallTo(() => outgoingGoods.RemoveCoffeesAsync(A<IEnumerable<Coffee>>.Ignored)).MustNotHaveHappened();
     }
 
     [Test]
@@ -111,26 +120,15 @@ public class DeliverCoffeeAsyncTests
     [TestCase(HttpStatusCode.Unauthorized)]
     public async Task SubjectRestoresCorrectAmountIfHttpCallFailsWithStatusCodeOtherThanSuccess(HttpStatusCode statusCode)
     {
+        var testCollection = CoffeeCreator.CreateListOfCoffees(42);
+
         messageHandler.StatusCodeToReturn = statusCode;
         A.CallTo(messageHandler).Where(x => x.Method.Name == "SendAsync").CallsBaseMethod();
 
-        A.CallTo(() => outgoingGoods.CollectOutgoingGoodsAsync()).Returns(42);
+        A.CallTo(() => outgoingGoods.GetCoffeesAsync()).Returns(testCollection);
 
         await subject.DeliverCoffeeAsync();
 
-        A.CallTo(() => outgoingGoods.DepositCoffeeAsync(42)).MustHaveHappenedOnceExactly();
-    }
-
-    [Test]
-    public async Task SubjectRestoresNoCoffeeInOutgoingGoodsIfSuccessful()
-    {
-        messageHandler.StatusCodeToReturn = HttpStatusCode.OK;
-        A.CallTo(messageHandler).Where(x => x.Method.Name == "SendAsync").CallsBaseMethod();
-
-        A.CallTo(() => outgoingGoods.CollectOutgoingGoodsAsync()).Returns(42);
-
-        await subject.DeliverCoffeeAsync();
-
-        A.CallTo(() => outgoingGoods.DepositCoffeeAsync(A<int>.Ignored)).MustNotHaveHappened();
+        A.CallTo(() => outgoingGoods.RemoveCoffeesAsync(A<IEnumerable<Coffee>>.Ignored)).MustNotHaveHappened();
     }
 }

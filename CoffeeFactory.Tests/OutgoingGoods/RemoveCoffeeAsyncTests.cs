@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace CoffeeChallenge.CoffeeFactory.Tests;
 
-public class DepositCoffeeAsyncTests
+public class RemoveCoffeeAsyncTests
 {
     private OutgoingGoods subject;
 
@@ -17,6 +17,6 @@ public class DepositCoffeeAsyncTests
     [Test]
     public void SubjectThrowsIfNull()
     {
-        Assert.ThrowsAsync<ArgumentNullException>(() => subject.DepositCoffeeAsync(null!));
+        Assert.ThrowsAsync<ArgumentNullException>(() => subject.RemoveCoffeesAsync(null!));
     }
 }

@@ -14,10 +14,10 @@ USER appuser
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0-focal AS build
 WORKDIR /src
-COPY ["CoffeeFactory.csproj", "."]
+COPY ./CoffeeFactory ./CoffeeFactory
+COPY ./Contracts ./Contracts
+WORKDIR /src/CoffeeFactory
 RUN dotnet restore "CoffeeFactory.csproj"
-COPY . .
-WORKDIR "/src"
 RUN dotnet build "CoffeeFactory.csproj" -c Release -o /app/build
 
 FROM build AS publish

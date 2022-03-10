@@ -14,7 +14,7 @@ IHost host = Host.CreateDefaultBuilder(args)
             {
                 client.BaseAddress = new Uri("http://cc-coffee-store:5000/");
             });
-        services.AddSingleton<IOutgoingGoodsFileAccess>((serviceProvider) => new OutgoingGoodsFileAccess("/mnt/data/outgoing-goods"));
+        services.AddSingleton<IOutgoingGoodsBackUp>((serviceProvider) => new OutgoingGoodsFileBackUp("/mnt/data/outgoing-goods"));
     })
     .Build();
 

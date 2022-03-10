@@ -15,13 +15,11 @@ public class Distributor : IDistributor
 
     public async Task DeliverCoffeeAsync()
     {
-        var amountToDeliver = await outgoingGoods.CollectOutgoingGoodsAsync();
+        var collectedCoffees = await outgoingGoods.GetCoffeesAsync();
+        var amountToDeliver = collectedCoffees.Count();
 
         if (amountToDeliver == 0)
             return;
-
-        if (amountToDeliver < 0)
-            throw new InvalidOperationException();
 
         var requestUri = string.Format(requestUriFormatString, amountToDeliver);
 
@@ -37,11 +35,9 @@ public class Distributor : IDistributor
             // can be considered handled by returning the coffee to OutgoingGoods
         }
 
-        // TODO Should exceptions generally be caught here and handled by returning the coffee?
-
-        if (!deliverySuccess)
+        if (deliverySuccess)
         {
-            await outgoingGoods.DepositCoffeeAsync(amountToDeliver);
+            await outgoingGoods.RemoveCoffeesAsync(collectedCoffees);
         }
     }
 }

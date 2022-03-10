@@ -1,10 +1,11 @@
-namespace CoffeeChallenge.CoffeeFactory.Distribution;
+using CoffeeChallenge.Contracts;
 
-// TODO rework design of OutgoingGoods
+namespace CoffeeChallenge.CoffeeFactory.Distribution;
 
 public interface IOutgoingGoods
 {
-    Task DepositCoffeeAsync(int count);
+    Task DepositCoffeeAsync(Coffee coffee);
+    Task RemoveCoffeesAsync(IEnumerable<Coffee> coffeesToRemove);
 
-    Task<int> CollectOutgoingGoodsAsync();
+    Task<IEnumerable<Coffee>> GetCoffeesAsync();
 }

@@ -46,7 +46,7 @@
             "dockerBuild": {
                 "tag": "coffeechallenge:dev",
                 "target": "base",
-                "dockerfile": "${workspaceFolder}/CoffeeFactory/Dockerfile",
+                "dockerfile": "${workspaceFolder}/CoffeeFactory.dockerfile",
                 "context": "${workspaceFolder}",
                 "pull": true
             },
