@@ -46,7 +46,9 @@ public class OutgoingGoodsFileBackUp : IOutgoingGoodsBackUp
 
         using (var writer = fileInfo.CreateText())
         {
-            string jsonString = JsonSerializer.Serialize(coffees);
+            var options = new JsonSerializerOptions() { WriteIndented = true };
+
+            string jsonString = JsonSerializer.Serialize(coffees, options);
             await writer.WriteAsync(jsonString);
         }
     }
