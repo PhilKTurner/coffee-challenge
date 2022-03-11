@@ -42,7 +42,8 @@ services:
     profiles:
       - coffee-services
     build:
-      context: ./CoffeeStore
+      context: .
+      dockerfile: CoffeeStore.dockerfile
     image: cc-coffee-store
     container_name: cc-coffee-store
     depends_on:

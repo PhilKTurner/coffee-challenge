@@ -1,3 +1,4 @@
+using CoffeeChallenge.Contracts;
 using CoffeeChallenge.CoffeeStore.Sales;
 using CoffeeChallenge.CoffeeStore.Storage;
 using Microsoft.AspNetCore.Mvc;
@@ -24,13 +25,13 @@ public class CoffeeController : ControllerBase
     /// <summary>
     /// Delivers coffee to the store's storage.
     /// </summary>
-    /// <param name="deliverySize">Size of the delivery (must be greater than 0)</param>
+    /// <param name="coffees">The delivery, a collection of coffees</param>
     /// <response code="200">Delivery was successfully stored.</response>
     // TODO Prevent others than CoffeeFactory from making deliveries?
-    [HttpPut("[action]/{deliverySize}")]
-    public void Deliver(int deliverySize)
+    [HttpPut("[action]")]
+    public void Deliver(IEnumerable<Coffee> coffees)
     {
-        storage.StoreCoffee(deliverySize);
+        storage.StoreCoffee(coffees.Count());
     }
 
     /// <summary>

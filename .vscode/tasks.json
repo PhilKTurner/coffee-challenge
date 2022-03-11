@@ -63,7 +63,7 @@
             "dockerBuild": {
                 "tag": "coffeechallenge:dev",
                 "target": "base",
-                "dockerfile": "${workspaceFolder}/CoffeeStore/Dockerfile",
+                "dockerfile": "${workspaceFolder}/CoffeeStore.dockerfile",
                 "context": "${workspaceFolder}",
                 "pull": true
             },
@@ -79,7 +79,7 @@
             ],
             "dockerBuild": {
                 "tag": "coffeechallenge:latest",
-                "dockerfile": "${workspaceFolder}/CoffeeStore/Dockerfile",
+                "dockerfile": "${workspaceFolder}/CoffeeStore.dockerfile",
                 "context": "${workspaceFolder}",
                 "pull": true
             },

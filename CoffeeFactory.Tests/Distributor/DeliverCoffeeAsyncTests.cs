@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using CoffeeChallenge.CoffeeFactory.Distribution;
 using CoffeeChallenge.Contracts;
@@ -19,6 +20,8 @@ public class DeliverCoffeeAsyncTests
     private IOutgoingGoods outgoingGoods;
     private HttpClient httpClient;
     private TestMessageHandler messageHandler;
+
+    private const string expectedRelativeUri = "/coffee/deliver";
 
     [SetUp]
     public void Setup()
@@ -41,30 +44,41 @@ public class DeliverCoffeeAsyncTests
         httpClient.Dispose();
     }
 
-    private void CheckSendCall(string expectedRelativeUri)
+    private void CheckSendCall(string expectedRelativeUri, IEnumerable<Coffee> expectedContent)
     {
         if (httpClient.BaseAddress == null)
             throw new Exception("Test setup didn't provide BaseAddress.");
 
         var expectedUri = new Uri(httpClient.BaseAddress, expectedRelativeUri);
 
-        A.CallTo(messageHandler).Where(x => IsMessageHandlerCallValid(x, expectedUri)).MustHaveHappenedOnceExactly();
+        A.CallTo(messageHandler).Where(x => IsMessageHandlerCallValid(x, expectedUri, expectedContent)).MustHaveHappenedOnceExactly();
     }
 
-    private bool IsMessageHandlerCallValid(IFakeObjectCall call, Uri expectedUri)
+    private bool IsMessageHandlerCallValid(IFakeObjectCall call, Uri expectedUri, IEnumerable<Coffee> expectedContent)
     {
         var requestMessage = call.Arguments[0] as HttpRequestMessage;
         if (requestMessage == null)
             throw new Exception("Call argument is no valid HttpRequestMessage.");
 
+        var contentString = requestMessage.Content?.ReadAsStringAsync().Result;
+        if (contentString == null)
+            throw new Exception("No valid content.");
+
+        var content = JsonSerializer.Deserialize<List<Coffee>>(contentString);
+        if (content == null)
+            throw new Exception("No valid content");
+
+        Assert.AreEqual(expectedContent.Count(), content.Count());
+        Assert.IsTrue(content.All(c => expectedContent.Any(x => x.Id == c.Id)));
+
         return call.Method.Name == "SendAsync" && requestMessage.Method == HttpMethod.Put && requestMessage.RequestUri == expectedUri;
     }
 
     [Test]
-    [TestCase(1, "/coffee/deliver/1")]
-    [TestCase(23, "/coffee/deliver/23")]
-    [TestCase(42, "/coffee/deliver/42")]
-    public async Task SubjectCallsPutWithCorrectAmount(int objectCount, string expectedRelativeUri)
+    [TestCase(1)]
+    [TestCase(23)]
+    [TestCase(42)]
+    public async Task SubjectCallsPutWithCorrectContent(int objectCount)
     {
         var testCollection = CoffeeCreator.CreateListOfCoffees(objectCount);
 
@@ -72,7 +86,7 @@ public class DeliverCoffeeAsyncTests
 
         await subject.DeliverCoffeeAsync();
 
-        CheckSendCall(expectedRelativeUri);
+        CheckSendCall(expectedRelativeUri, testCollection);
     }
 
     [Test]

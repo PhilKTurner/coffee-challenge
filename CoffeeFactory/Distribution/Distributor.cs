@@ -1,8 +1,12 @@
+using System.Net.Mime;
+using System.Text;
+using System.Text.Json;
+
 namespace CoffeeChallenge.CoffeeFactory.Distribution;
 
 public class Distributor : IDistributor
 {
-    private const string requestUriFormatString = "/coffee/deliver/{0}";
+    private const string requestUri = "/coffee/deliver";
 
     private readonly IOutgoingGoods outgoingGoods;
     private readonly IHttpClientFactory httpClientFactory;
@@ -21,13 +25,17 @@ public class Distributor : IDistributor
         if (amountToDeliver == 0)
             return;
 
-        var requestUri = string.Format(requestUriFormatString, amountToDeliver);
-
         var deliverySuccess = false;
         try
         {
             var httpClient = httpClientFactory.CreateClient("CoffeeStoreClient");
-            var response = await httpClient.PutAsync(requestUri, null);
+
+            var options = new JsonSerializerOptions() { WriteIndented = true };
+            var coffeesAsJson = JsonSerializer.Serialize(collectedCoffees, options);
+
+            var content = new StringContent(coffeesAsJson, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+            var response = await httpClient.PutAsync(requestUri, content);
             deliverySuccess = response.IsSuccessStatusCode;
         }
         catch (HttpRequestException)
