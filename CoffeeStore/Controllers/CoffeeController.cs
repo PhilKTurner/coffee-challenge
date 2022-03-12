@@ -28,6 +28,7 @@ public class CoffeeController : ControllerBase
     /// <param name="coffees">The delivery, a collection of coffees</param>
     /// <response code="200">Delivery was successfully stored.</response>
     // TODO Prevent others than CoffeeFactory from making deliveries?
+    // TODO input checking
     [HttpPut("[action]")]
     public void Deliver(IEnumerable<Coffee> coffees)
     {
@@ -50,6 +51,8 @@ public class CoffeeController : ControllerBase
     /// </summary>
     /// <param name="requestedAmount">Requested amount of coffee</param>
     /// <response code="200">Purchase successful</response>
+    // TODO return UIDs of purchased coffees
+    // TODO input checking
     [HttpPut("[action]")]
     public void Buy(int requestedAmount = 1)
     {
