@@ -1,7 +1,8 @@
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using CoffeeChallenge.CoffeeStore.DataAccess;
 using CoffeeChallenge.CoffeeStore.Storage;
+using CoffeeChallenge.Contracts;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
@@ -37,38 +38,27 @@ public class GetCoffeeCountTests
 
     CoffeeStoreContext CreateContext() => new CoffeeStoreContext(contextOptions);
 
-    [Test]
-    public void SubjectThrowsIfInventoryEntryNotSingular()
-    {
-        using (var testContext = CreateContext())
-        {    
-            testContext.Coffee.Add(new Coffee());
-            testContext.SaveChanges();
-
-            var subject = new CoffeeStorage(testContext);
-
-            Assert.Throws<InvalidOperationException>(() => subject.GetCoffeeCount());
-        }
-    }
-
-    [Test]
     [TestCase(0)]
     [TestCase(1)]
-    [TestCase(23)]
     [TestCase(42)]
-    [TestCase(int.MaxValue)]
-    public void SubjectRelaysInventoryEntryCorrectly(int expectedCount)
+    public void SubjectReturnsCorrectCount(int testCount)
     {
         using (var testContext = CreateContext())
-        {    
-            testContext.Coffee.Single().Inventory = expectedCount;
+        {
+            var testCollection = new List<Coffee>();
+            for (int i = 0; i < testCount; i++)
+            {
+                testCollection.Add(new Coffee { Id = Guid.NewGuid() });
+            }
+
+            testContext.AddRange(testCollection);
             testContext.SaveChanges();
 
             var subject = new CoffeeStorage(testContext);
 
-            var actualResult = subject.GetCoffeeCount();
+            var actualCount = subject.GetCoffeeCount();
 
-            Assert.AreEqual(expectedCount, actualResult);
+            Assert.AreEqual(testCount, actualCount);
         }
     }
 }

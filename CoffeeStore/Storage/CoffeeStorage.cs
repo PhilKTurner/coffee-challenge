@@ -1,4 +1,5 @@
 using CoffeeChallenge.CoffeeStore.DataAccess;
+using CoffeeChallenge.Contracts;
 
 namespace CoffeeChallenge.CoffeeStore.Storage;
 
@@ -13,7 +14,7 @@ public class CoffeeStorage : ICoffeeStorage
 
     public int GetCoffeeCount()
     {
-        return context.Coffee.Single().Inventory;
+        return context.Coffees.Count();
     }
 
     public void RetrieveCoffee(int count)
@@ -21,23 +22,22 @@ public class CoffeeStorage : ICoffeeStorage
         if (count <= 0)
             throw new ArgumentOutOfRangeException(nameof(count));
 
-        var coffee = context.Coffee.Single();
+        var availableCoffeeCount = context.Coffees.Count();
 
-        if (count > coffee.Inventory)
+        if (count > availableCoffeeCount)
             throw new InvalidOperationException("Not enough coffee available.");
 
-        coffee.Inventory -= count;
+        var coffeeToRemove = context.Coffees.Take(count);
+        context.Coffees.RemoveRange(coffeeToRemove);
         context.SaveChanges();
     }
 
-    public void StoreCoffee(int count)
+    public void StoreCoffee(IEnumerable<Coffee> coffeesToStore)
     {
-        if (count <= 0)
-            throw new ArgumentOutOfRangeException(nameof(count));
-        
-        var coffee = context.Coffee.Single();
+        if (coffeesToStore is null)
+            throw new ArgumentNullException(nameof(coffeesToStore));
 
-        coffee.Inventory += count;
+        context.Coffees.AddRange(coffeesToStore);
         context.SaveChanges();
     }
 }

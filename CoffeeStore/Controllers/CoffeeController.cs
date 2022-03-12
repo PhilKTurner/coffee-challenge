@@ -31,7 +31,7 @@ public class CoffeeController : ControllerBase
     [HttpPut("[action]")]
     public void Deliver(IEnumerable<Coffee> coffees)
     {
-        storage.StoreCoffee(coffees.Count());
+        storage.StoreCoffee(coffees);
     }
 
     /// <summary>

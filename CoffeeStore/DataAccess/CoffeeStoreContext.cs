@@ -1,3 +1,4 @@
+using CoffeeChallenge.Contracts;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeChallenge.CoffeeStore.DataAccess;
@@ -8,10 +9,5 @@ public class CoffeeStoreContext : DbContext
     {
     }
 
-    public DbSet<Coffee> Coffee { get; set; } = null!;
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<Coffee>().HasData(new Coffee { Id = 1, Inventory = 0 });
-    }
+    public DbSet<Coffee> Coffees { get; set; } = null!;
 }

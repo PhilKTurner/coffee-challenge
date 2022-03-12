@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using CoffeeChallenge.CoffeeStore.DataAccess;
 using CoffeeChallenge.CoffeeStore.Storage;
+using CoffeeChallenge.Contracts;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
@@ -37,21 +39,6 @@ public class RetrieveCoffeeTests
 
     CoffeeStoreContext CreateContext() => new CoffeeStoreContext(contextOptions);
 
-    [Test]
-    public void SubjectThrowsIfInventoryEntryNotSingular()
-    {
-        using (var testContext = CreateContext())
-        {    
-            testContext.Coffee.Add(new Coffee());
-            testContext.SaveChanges();
-
-            var subject = new CoffeeStorage(testContext);
-
-            Assert.Throws<InvalidOperationException>(() => subject.RetrieveCoffee(1));
-        }
-    }
-
-    [Test]
     [TestCase(0)]
     [TestCase(-1)]
     [TestCase(-42)]
@@ -66,7 +53,6 @@ public class RetrieveCoffeeTests
         }
     }
 
-    [Test]
     [TestCase(42, 1)]
     [TestCase(42, 23)]
     [TestCase(42, 42)]
@@ -77,7 +63,13 @@ public class RetrieveCoffeeTests
     {
         using (var testContext = CreateContext())
         {
-            testContext.Coffee.Single().Inventory = currentCount;
+            var testCollection = new List<Coffee>();
+            for (int i = 0; i < currentCount; i++)
+            {
+                testCollection.Add(new Coffee { Id = Guid.NewGuid() });
+            }
+
+            testContext.AddRange(testCollection);
             testContext.SaveChanges();
 
             var subject = new CoffeeStorage(testContext);
@@ -85,13 +77,12 @@ public class RetrieveCoffeeTests
             subject.RetrieveCoffee(subtractedCount);
 
             var expectedCount = currentCount - subtractedCount;
-            var actualCount = testContext.Coffee.Single().Inventory;
+            var actualCount = testContext.Coffees.Count();
 
             Assert.AreEqual(expectedCount, actualCount);
         }
     }
 
-    [Test]
     [TestCase(0, 1)]
     [TestCase(0, 23)]
     [TestCase(0, 42)]
@@ -102,7 +93,13 @@ public class RetrieveCoffeeTests
     {
         using (var testContext = CreateContext())
         {
-            testContext.Coffee.Single().Inventory = currentCount;
+            var testCollection = new List<Coffee>();
+            for (int i = 0; i < currentCount; i++)
+            {
+                testCollection.Add(new Coffee { Id = Guid.NewGuid() });
+            }
+
+            testContext.AddRange(testCollection);
             testContext.SaveChanges();
 
             var subject = new CoffeeStorage(testContext);

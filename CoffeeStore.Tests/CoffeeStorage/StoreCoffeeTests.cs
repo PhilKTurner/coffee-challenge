@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using CoffeeChallenge.CoffeeStore.DataAccess;
 using CoffeeChallenge.CoffeeStore.Storage;
+using CoffeeChallenge.Contracts;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
@@ -38,56 +40,50 @@ public class StoreCoffeeTests
     CoffeeStoreContext CreateContext() => new CoffeeStoreContext(contextOptions);
 
     [Test]
-    public void SubjectThrowsIfInventoryEntryNotSingular()
-    {
-        using (var testContext = CreateContext())
-        {    
-            testContext.Coffee.Add(new Coffee());
-            testContext.SaveChanges();
-
-            var subject = new CoffeeStorage(testContext);
-
-            Assert.Throws<InvalidOperationException>(() => subject.StoreCoffee(1));
-        }
-    }
-
-    [Test]
-    [TestCase(0)]
-    [TestCase(-1)]
-    [TestCase(-42)]
-    [TestCase(int.MinValue)]
-    public void SubjectThrowsIfCountIsInvalid(int testValue)
+    public void SubjectThrowsIfNull()
     {
         using (var testContext = CreateContext())
         {
             var subject = new CoffeeStorage(testContext);
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => subject.StoreCoffee(testValue));
+            Assert.Throws<ArgumentNullException>(() => subject.StoreCoffee(null!));
         }
     }
 
-    [Test]
     [TestCase(0, 1)]
     [TestCase(0, 23)]
     [TestCase(0, 42)]
     [TestCase(23, 1)]
     [TestCase(23, 23)]
     [TestCase(23, 42)]
-    public void SubjectAddsGivenAmountToInventory(int currentCount, int addedCount)
+    public void SubjectAddsCoffeeToInventory(int currentCount, int addedCount)
     {
         using (var testContext = CreateContext())
         {
-            testContext.Coffee.Single().Inventory = currentCount;
+            var availableCoffees = new List<Coffee>();
+            for (int i = 0; i < currentCount; i++)
+            {
+                availableCoffees.Add(new Coffee { Id = Guid.NewGuid() });
+            }
+
+            testContext.AddRange(availableCoffees);
             testContext.SaveChanges();
+
+            var coffeesToStore = new List<Coffee>();
+            for (int i = 0; i < addedCount; i++)
+            {
+                coffeesToStore.Add(new Coffee { Id = Guid.NewGuid() });
+            }
 
             var subject = new CoffeeStorage(testContext);
 
-            subject.StoreCoffee(addedCount);
+            subject.StoreCoffee(coffeesToStore);
 
             var expectedCount = currentCount + addedCount;
-            var actualCount = testContext.Coffee.Single().Inventory;
+            var actualCount = testContext.Coffees.Count();
 
             Assert.AreEqual(expectedCount, actualCount);
+            Assert.IsTrue(coffeesToStore.All(x => testContext.Coffees.Any(c => c.Id == x.Id)));
         }
     }
 }
