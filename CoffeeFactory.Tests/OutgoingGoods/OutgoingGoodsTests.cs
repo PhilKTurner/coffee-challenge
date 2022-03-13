@@ -15,7 +15,6 @@ public class OutgoingGoodsTests
         subject = new OutgoingGoods(new OutgoingGoodsBackUpMock());
     }
 
-    [Test]
     [TestCase(1)]
     [TestCase(23)]
     [TestCase(42)]

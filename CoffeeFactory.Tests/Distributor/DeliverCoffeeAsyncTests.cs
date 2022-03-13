@@ -74,7 +74,6 @@ public class DeliverCoffeeAsyncTests
         return call.Method.Name == "SendAsync" && requestMessage.Method == HttpMethod.Put && requestMessage.RequestUri == expectedUri;
     }
 
-    [Test]
     [TestCase(1)]
     [TestCase(23)]
     [TestCase(42)]
@@ -128,7 +127,6 @@ public class DeliverCoffeeAsyncTests
         A.CallTo(() => outgoingGoods.RemoveCoffeesAsync(A<IEnumerable<Coffee>>.Ignored)).MustNotHaveHappened();
     }
 
-    [Test]
     [TestCase(HttpStatusCode.NotFound)]
     [TestCase(HttpStatusCode.InternalServerError)]
     [TestCase(HttpStatusCode.Unauthorized)]

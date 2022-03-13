@@ -21,7 +21,6 @@ public class OutgoingGoodsFileBackUpTests
         subject = new OutgoingGoodsFileBackUp(testFile);
     }
 
-    [Test]
     [TestCase(0)]
     [TestCase(1)]
     [TestCase(42)]
