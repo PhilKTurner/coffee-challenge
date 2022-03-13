@@ -6,5 +6,5 @@ public interface ICoffeeStorage
 {
     int GetCoffeeCount();
     void StoreCoffee(IEnumerable<Coffee> coffeesToStore);
-    void RetrieveCoffee(int count);
+    IEnumerable<Coffee> RetrieveCoffee(int count);
 }

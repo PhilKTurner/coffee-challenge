@@ -17,7 +17,7 @@ public class CoffeeStorage : ICoffeeStorage
         return context.Coffees.Count();
     }
 
-    public void RetrieveCoffee(int count)
+    public IEnumerable<Coffee> RetrieveCoffee(int count)
     {
         if (count <= 0)
             throw new ArgumentOutOfRangeException(nameof(count));
@@ -27,9 +27,11 @@ public class CoffeeStorage : ICoffeeStorage
         if (count > availableCoffeeCount)
             throw new InvalidOperationException("Not enough coffee available.");
 
-        var coffeeToRemove = context.Coffees.Take(count);
-        context.Coffees.RemoveRange(coffeeToRemove);
+        var coffeeToRetrieve = context.Coffees.Take(count).ToList();
+        context.Coffees.RemoveRange(coffeeToRetrieve);
         context.SaveChanges();
+
+        return coffeeToRetrieve;
     }
 
     public void StoreCoffee(IEnumerable<Coffee> coffeesToStore)

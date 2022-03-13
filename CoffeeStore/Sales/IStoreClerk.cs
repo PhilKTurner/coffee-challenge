@@ -1,6 +1,8 @@
+using CoffeeChallenge.Contracts;
+
 namespace CoffeeChallenge.CoffeeStore.Sales;
 
 public interface IStoreClerk
 {
-    void BuyCoffee(int count);
+    IEnumerable<Coffee> BuyCoffee(int count);
 }

@@ -1,4 +1,5 @@
 using CoffeeChallenge.CoffeeStore.Storage;
+using CoffeeChallenge.Contracts;
 
 namespace CoffeeChallenge.CoffeeStore.Sales;
 
@@ -11,7 +12,7 @@ public class StoreClerk : IStoreClerk
         this.storage = storage;
     }
 
-    public void BuyCoffee(int count)
+    public IEnumerable<Coffee> BuyCoffee(int count)
     {
         if (count <= 0)
             throw new ArgumentOutOfRangeException(nameof(count));
@@ -20,6 +21,8 @@ public class StoreClerk : IStoreClerk
         if (count > availableCoffee)
             throw new InvalidOperationException("Not enough coffee available.");
 
-        storage.RetrieveCoffee(count);
+        var retrievedCoffee = storage.RetrieveCoffee(count);
+
+        return retrievedCoffee;
     }
 }

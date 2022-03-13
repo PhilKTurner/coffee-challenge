@@ -107,4 +107,27 @@ public class RetrieveCoffeeTests
             Assert.Throws<InvalidOperationException>(() => subject.RetrieveCoffee(subtractedCount));
         }
     }
+
+    [TestCase(1)]
+    [TestCase(42)]
+    public void SubjectReturnsCoffeeObjectsFromInventory(int coffeeCount)
+    {
+        using (var testContext = CreateContext())
+        {
+            var testCollection = new List<Coffee>();
+            for (int i = 0; i < coffeeCount; i++)
+            {
+                testCollection.Add(new Coffee { Id = Guid.NewGuid() });
+            }
+
+            testContext.AddRange(testCollection);
+            testContext.SaveChanges();
+
+            var subject = new CoffeeStorage(testContext);
+
+            var actualCoffees = subject.RetrieveCoffee(coffeeCount);
+
+            Assert.IsTrue(actualCoffees.All(x => testCollection.Any(c => c.Id == x.Id)));
+        }
+    }
 }

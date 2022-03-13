@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using CoffeeChallenge.CoffeeStore.Sales;
 using CoffeeChallenge.CoffeeStore.Storage;
+using CoffeeChallenge.Contracts;
 using FakeItEasy;
 using NUnit.Framework;
 
@@ -21,18 +24,8 @@ public class BuyCoffeeTests
         A.CallTo<int>(() => storage.GetCoffeeCount()).Returns(int.MaxValue);
     }
 
-    [Test]
-    public void SubjectRetrievesCoffeeFromStorage()
-    {
-        subject.BuyCoffee(42);
-
-        A.CallTo(() => storage.RetrieveCoffee(A<int>.Ignored)).MustHaveHappenedOnceExactly();
-    }
-
-    [Test]
     [TestCase(1)]
     [TestCase(42)]
-    [TestCase(int.MaxValue)]
     public void SubjectRetrievesRightAmountOfCoffeeFromStorage(int expectedAmount)
     {
         subject.BuyCoffee(expectedAmount);
@@ -40,24 +33,31 @@ public class BuyCoffeeTests
         A.CallTo(() => storage.RetrieveCoffee(A<int>.That.IsEqualTo(expectedAmount))).MustHaveHappenedOnceExactly();
     }
 
-    [Test]
-    [TestCase(0)]
-    [TestCase(-1)]
-    [TestCase(-42)]
-    [TestCase(int.MinValue)]
-    public void SubjectThrowsIfCountIsInvalid(int testValue)
-    {
-        Assert.Throws<ArgumentOutOfRangeException>(() => subject.BuyCoffee(testValue));
-    }
-
-    [Test]
     [TestCase(0, 1)]
-    [TestCase(1, 42)]
-    [TestCase(42, int.MaxValue)]
+    [TestCase(1, 23)]
+    [TestCase(23, 42)]
     public void SubjectChecksInventoryAndThrowsIfNotEnoughCoffeeIsAvailable(int availableCoffee, int testValue)
     {
         A.CallTo<int>(() => storage.GetCoffeeCount()).Returns(availableCoffee);
 
         Assert.Throws<InvalidOperationException>(() => subject.BuyCoffee(testValue));
+    }
+
+    [TestCase(1)]
+    [TestCase(42)]
+    public void SubjectReturnsCoffeeObjectsFromStorage(int coffeeCount)
+    {
+        var testCollection = new List<Coffee>();
+        for (int i = 0; i < coffeeCount; i++)
+        {
+            testCollection.Add(new Coffee { Id = Guid.NewGuid() });
+        }
+
+        A.CallTo<IEnumerable<Coffee>>(() => storage.RetrieveCoffee(coffeeCount)).Returns(testCollection);
+        A.CallTo<int>(() => storage.GetCoffeeCount()).Returns(coffeeCount);
+
+        var actualCoffees = subject.BuyCoffee(coffeeCount);
+
+        Assert.IsTrue(actualCoffees.All(x => testCollection.Any(c => c.Id == x.Id)));
     }
 }
