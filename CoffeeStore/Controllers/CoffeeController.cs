@@ -2,10 +2,9 @@ using CoffeeChallenge.Contracts;
 using CoffeeChallenge.CoffeeStore.Sales;
 using CoffeeChallenge.CoffeeStore.Storage;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Mime;
 
 namespace CoffeeChallenge.CoffeeStore.Controllers;
-
-// TODO exception handling & response codes
 
 [ApiController]
 [Route("[controller]")]
@@ -28,16 +27,19 @@ public class CoffeeController : ControllerBase
     /// <param name="coffees">The delivery, a collection of coffees</param>
     /// <response code="200">Delivery was successfully stored</response>
     /// <response code="400">Coffee payload invalid</response>
+    /// <response code="500">Database error</response>
     // TODO Prevent others than CoffeeFactory from making deliveries?
     [HttpPut("[action]")]
+    [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public ActionResult Deliver(IEnumerable<Coffee> coffees)
     {
         if (coffees is null)
             return this.BadRequest("No coffees found in request body.");
 
-        storage.StoreCoffee(coffees); 
+        storage.StoreCoffee(coffees);
         return this.Ok();
     }
 
@@ -46,8 +48,10 @@ public class CoffeeController : ControllerBase
     /// </summary>
     /// <returns>The number of coffees in storage</returns>
     /// <response code="200">Returns the number of coffees in storage</response>
+    /// <response code="500">Database error</response>
     [HttpGet("[action]")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public int Available()
     {
         return storage.GetCoffeeCount();
@@ -60,16 +64,24 @@ public class CoffeeController : ControllerBase
     /// <returns>The purchased coffees</returns>
     /// <response code="200">Purchase successful</response>
     /// <response code="400"><paramref name="requestedAmount"/> is too small</response>
+    /// <response code="409">Not enough coffee in storage to fill the order</response>
     [HttpGet("[action]")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(IEnumerable<Coffee>), StatusCodes.Status200OK, MediaTypeNames.Application.Json)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status409Conflict)]
     public ActionResult<IEnumerable<Coffee>> Buy(int requestedAmount = 1)
     {
         if (requestedAmount <= 0)
             return this.BadRequest("requestedAmount has to be at least 1");
 
-        var purchasedCoffees = clerk.BuyCoffee(requestedAmount);
-
-        return this.Ok(purchasedCoffees);
+        try
+        {
+            var purchasedCoffees = clerk.BuyCoffee(requestedAmount);
+            return this.Ok(purchasedCoffees);
+        }
+        catch (InvalidOperationException exception)
+        {
+            return this.Conflict(exception.Message);
+        }
     }
 }

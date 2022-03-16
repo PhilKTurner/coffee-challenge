@@ -24,6 +24,7 @@ public class CoffeeStorage : ICoffeeStorage
 
         var availableCoffeeCount = context.Coffees.Count();
 
+        // TODO Is this component responsible for doing this?
         if (count > availableCoffeeCount)
             throw new InvalidOperationException("Not enough coffee available.");
 
