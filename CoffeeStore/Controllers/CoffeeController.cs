@@ -26,13 +26,19 @@ public class CoffeeController : ControllerBase
     /// Delivers coffee to the store's storage.
     /// </summary>
     /// <param name="coffees">The delivery, a collection of coffees</param>
-    /// <response code="200">Delivery was successfully stored.</response>
+    /// <response code="200">Delivery was successfully stored</response>
+    /// <response code="400">Coffee payload invalid</response>
     // TODO Prevent others than CoffeeFactory from making deliveries?
-    // TODO input checking
     [HttpPut("[action]")]
-    public void Deliver(IEnumerable<Coffee> coffees)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public ActionResult Deliver(IEnumerable<Coffee> coffees)
     {
-        storage.StoreCoffee(coffees);
+        if (coffees is null)
+            return this.BadRequest("No coffees found in request body.");
+
+        storage.StoreCoffee(coffees); 
+        return this.Ok();
     }
 
     /// <summary>
@@ -41,6 +47,7 @@ public class CoffeeController : ControllerBase
     /// <returns>The number of coffees in storage</returns>
     /// <response code="200">Returns the number of coffees in storage</response>
     [HttpGet("[action]")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public int Available()
     {
         return storage.GetCoffeeCount();
@@ -52,10 +59,17 @@ public class CoffeeController : ControllerBase
     /// <param name="requestedAmount">Requested amount of coffee</param>
     /// <returns>The purchased coffees</returns>
     /// <response code="200">Purchase successful</response>
-    // TODO input checking
+    /// <response code="400"><paramref name="requestedAmount"/> is too small</response>
     [HttpGet("[action]")]
-    public IEnumerable<Coffee> Buy(int requestedAmount = 1)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public ActionResult<IEnumerable<Coffee>> Buy(int requestedAmount = 1)
     {
-        return clerk.BuyCoffee(requestedAmount);
+        if (requestedAmount <= 0)
+            return this.BadRequest("requestedAmount has to be at least 1");
+
+        var purchasedCoffees = clerk.BuyCoffee(requestedAmount);
+
+        return this.Ok(purchasedCoffees);
     }
 }
